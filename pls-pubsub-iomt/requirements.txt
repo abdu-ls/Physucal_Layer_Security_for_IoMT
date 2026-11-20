@@ -1,0 +1,7 @@
+# L1 + L2 (Colab already has most of these)
+numpy>=1.24
+scipy>=1.10
+pandas>=1.5
+pyyaml>=6.0
+matplotlib>=3.7
+torch>=2.0          # training only; evaluation and the testbed use NumPy inference

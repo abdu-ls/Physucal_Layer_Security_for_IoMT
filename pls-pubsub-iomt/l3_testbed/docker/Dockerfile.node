@@ -1,0 +1,10 @@
+# One image for every testbed node: publishers, subscribers and both MQTT brokers.
+# Build:  sudo docker build -t iomt-node -f l3_testbed/docker/Dockerfile.node l3_testbed/docker
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bash python3 python3-pip mosquitto mosquitto-clients openssl \
+        iproute2 net-tools iputils-ping procps ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir "paho-mqtt>=2.0" cryptography pyyaml
+CMD ["/bin/bash"]

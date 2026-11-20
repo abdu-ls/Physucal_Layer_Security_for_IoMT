@@ -1,0 +1,9 @@
+# Ryu SDN controller on an older Python (Ryu does not install cleanly on Python 3.12).
+# Build:  sudo docker build -t iomt-ryu -f l3_testbed/docker/Dockerfile.ryu l3_testbed
+# Run:    sudo docker run -d --rm --name iomt-ryu --network host iomt-ryu
+FROM python:3.9-slim
+RUN pip install --no-cache-dir "setuptools<68" && \
+    pip install --no-cache-dir ryu "eventlet==0.30.2"
+COPY ryu_app.py /app/ryu_app.py
+EXPOSE 6653
+CMD ["ryu-manager", "--ofp-tcp-listen-port", "6653", "/app/ryu_app.py"]

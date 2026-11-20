@@ -1,0 +1,64 @@
+# IoMT topic set. Rates are per publishing device; subscribers are testbed roles (see testbed below).
+sensitivity_targets: {High: 0.01, Medium: 0.05, Low: 0.10}   # SOP target epsilon per class
+
+topics:
+  - name: ecg_alarm
+    mqtt: iomt/ecg/alarm
+    priority: P1
+    sensitivity: High
+    rate_per_device: 0.05      # Poisson, msgs/s
+    payload_bytes: 256
+    deadline_s: 0.100
+    subscribers: [nurse_station, handheld_1, handheld_2]
+  - name: infusion_status
+    mqtt: iomt/infusion/status
+    priority: P1
+    sensitivity: High
+    rate_per_device: 0.2
+    payload_bytes: 256
+    deadline_s: 0.500
+    subscribers: [nurse_station, handheld_1, ehr_gateway]
+  - name: ecg_waveform
+    mqtt: iomt/ecg/waveform
+    priority: P2
+    sensitivity: High
+    rate_per_device: 4.0
+    payload_bytes: 1024
+    deadline_s: 0.250
+    subscribers: [nurse_station, ehr_gateway]
+  - name: spo2_hr
+    mqtt: iomt/vitals/spo2hr
+    priority: P2
+    sensitivity: Medium
+    rate_per_device: 1.0
+    payload_bytes: 128
+    deadline_s: 1.0
+    subscribers: [nurse_station, handheld_2, ehr_gateway]
+  - name: bp_glucose
+    mqtt: iomt/vitals/bpglucose
+    priority: P3
+    sensitivity: Medium
+    rate_per_device: 0.0166667
+    payload_bytes: 128
+    deadline_s: 5.0
+    subscribers: [nurse_station, ehr_gateway]
+  - name: telemetry
+    mqtt: iomt/device/telemetry
+    priority: P3
+    sensitivity: Low
+    rate_per_device: 0.1
+    payload_bytes: 64
+    deadline_s: 10.0
+    subscribers: [ehr_gateway]
+
+# Containernet testbed: fixed subscriber roles and their distance from the AP (metres).
+testbed:
+  subscribers:
+    nurse_station: 8.0
+    handheld_1: 14.0
+    handheld_2: 22.0
+    ehr_gateway: 5.0
+  publisher_containers: 6       # each container emulates devices_per_container devices
+  devices_per_container: 5
+  trace_step_s: 0.1
+  trace_duration_s: 600

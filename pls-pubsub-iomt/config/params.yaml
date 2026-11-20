@@ -1,0 +1,74 @@
+# Default parameters for all three layers.
+# Every value here is a proposed default; cite a reference for each before the paper is written.
+
+phy:
+  M_default: 4               # AP antennas
+  M_grid: [2, 4, 6, 8]
+  P_tx_dbm: 20.0             # AP transmit power
+  bandwidth_hz: 20000000.0
+  noise_dbm: -92.0           # 20 MHz, 9 dB noise figure
+  carrier_hz: 2400000000.0          # sets reference path loss at 1 m
+  pathloss_exp: 3.5          # indoor
+  ward_radius_m: 30.0        # subscribers and publishers live inside this disc
+  min_dist_m: 2.0
+  eve_outer_radius_m: 60.0   # eavesdroppers: PPP in annulus [guard_radius, eve_outer_radius]
+  eve_density: 0.001         # per m^2
+  eve_density_grid: [0.0001, 0.0003, 0.001, 0.003, 0.01]
+  guard_radius_m: 5.0
+  guard_radius_grid: [2.0, 5.0, 10.0, 15.0]
+  phi_grid: [0.3, 0.5, 0.7, 0.9, 1.0]       # signal power fraction (1 = no artificial noise)
+  phi_fine: [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
+  dist_grid_m: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0]   # subscriber distance grid for lookup tables
+  secrecy_rate_target: 2.0   # R_s in bit/s/Hz used for SOP
+  min_decode_rate: 5.0       # bit/s/Hz a subscriber needs to decode in one attempt (connection outage below this)
+  mc_trials: 10000000          # Monte Carlo trials per point (use 1e6 for paper figures)
+  legit_samples_semi: 20000  # subscriber-channel samples for the semi-analytical K>1 SOP
+
+net:
+  epoch_s: 1.0               # decision epoch
+  episode_epochs: 60
+  n_devices: 30              # IoMT devices (patients x sensors) publishing
+  edge_service_rate: 150.0   # msgs/s at edge broker + MEC
+  cloud_service_rate: 1000.0 # msgs/s at cloud broker
+  backhaul_delay_s: 0.030    # one way, edge <-> cloud
+  uplink_access_s: [0.001, 0.005]   # uniform random access delay
+  uplink_rate_bps: 2000000.0     # effective uplink rate of a constrained device
+  dl_overhead_s: 0.001       # MAC/PHY overhead per downlink (multicast) transmission
+  dl_retx_s: 0.010           # added delay per HARQ retransmission
+  dl_max_attempts: 4         # after this many failures the message is lost
+  split_sched_s: 0.003       # extra scheduling delay when a topic is split into two groups
+  ap_power_w: 0.1            # 20 dBm
+  device_tx_power_w: 0.05
+  device_cpu_power_w: 0.5    # used to convert crypto CPU time to energy
+
+crypto:                      # defaults for baseline B3 until L3 crypto.csv replaces them
+  per_msg_cpu_s: 0.0004      # AES-GCM + TLS record processing on a constrained device
+  handshake_s: 0.120         # TLS 1.3 handshake, amortised over handshake_every messages
+  handshake_every: 500
+  overhead_bytes: 29         # TLS record header + AEAD tag
+
+drl:
+  gamma: 0.95
+  lr: 0.0005
+  batch_size: 128
+  buffer_size: 100000
+  warmup_steps: 2000
+  target_update_steps: 1000
+  eps_start: 1.0
+  eps_end: 0.05
+  eps_decay_steps: 60000
+  hidden: [128, 128]
+  train_episodes: 400
+  eval_episodes: 20
+  seeds: [0, 1, 2, 3, 4]
+  load_levels: [0.5, 0.75, 1.0, 1.25]
+  beta_s_grid: [0.0, 1.0, 3.0, 10.0, 30.0]
+
+reward:
+  w_latency: 1.0
+  w_energy: 0.2
+  beta_p: 2.0                # deadline-miss penalty scale
+  beta_s: 10.0               # secrecy-violation penalty scale
+  energy_ref_j: 0.001        # energy normaliser per message
+  priority_weight: {P1: 3.0, P2: 2.0, P3: 1.0}
+  sensitivity_weight: {High: 3.0, Medium: 2.0, Low: 1.0}
